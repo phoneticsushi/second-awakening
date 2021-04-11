@@ -58,9 +58,12 @@ specifically this one from his SoundCloud
 5. Edit the file `run_emulator.bat` with your favorite text editor
    and replace `path\to\Emuhawk.exe` with the path
    to wherever you downloaded `Emuhawk.exe`
-  
+
 ### Running the Project
-1. Run the `run_server.bat` script.
+1. (Optional) If on a laptop, set your power settings to "Maximum Performance"
+   and/or plug in the computer
+   to give yourself the best chance of emulating at full speed.
+2. Run the `run_server.bat` script.
    * This will:
      * create a virtual environment called `venv` if it doesn't already exist
      * install the necessary packages from `requirements.txt`
@@ -68,7 +71,7 @@ specifically this one from his SoundCloud
    * On first run, the music server will generate a number of `.wav` files in the `res/clips` directory.
      * This only happens once unless they're deleted or moved.
    * When the `main_server` is ready, it'll print "Socket now listening".
-2. Run the `run_emulator.bat` script you edited earlier.
+3. Run the `run_emulator.bat` script you edited earlier.
     - in the `Lua Console` window, you should see "1 script (1 active, 0 paused)"
       and the first line of the output window will show "Loaded Bindings" and the current time.
     - You can ignore the warnings from NullHawk, if there are any.
@@ -79,6 +82,23 @@ specifically this one from his SoundCloud
 
 The music will stop if you close BizHawk.
 You can restart BizHawk without restarting the music server, but not vice-versa.
+
+### Important Notes about Saving
+
+To save, LADX requires you to push four buttons at once.
+If your keyboard doesn't support this, here's an easy workaround:
+
+1. Go to **Config >> Controllers...**
+2. Deselect `Auto Tab` at the bottom of the window
+3. Choose a key to use to trigger the save function
+3. Add that same key to the mappings for the Start, Select, A, and B buttons
+
+Also good to know: **BizHawk doesn't automatically write your saves to disk.**
+In addition to performing the in-game save, **you must select *File >> Save Ram >> Flush Save RAM*
+or push Ctrl-S before closing BizHawk or your save file will be lost.**
+
+For more information, see the `In-game saves` section
+of the [BizHawk Readme](https://github.com/TASVideos/BizHawk).
 
 ### Upgrading the Project
 1. `git pull` any updates.
@@ -111,14 +131,18 @@ on any port you wish if for some reason you want the orchestrated music to play
 on some other device.  This isn't terribly useful though as sound effects
 will still be played locally.
 
+### Why isn't the emulator saving my game?
+
+See the section titled "Important Notes about Saving"
+
 ### Why is the emulator running slowly?
 
 This is intentional; some of The Second Narrator's tracks have different lengths than their in-game counterparts.
 In some cases they've been truncated, where in others the game's speed has been altered for cinematic effect.
 This will happen in a few areas of the game, most notably the intro cutscene.
 
-If the emulator hasn't returned to normal speed (60 fps) by the time you hit the title screen,
-one of three things is probably happening:
+If, however, the cutscene is out of sync or the emulator hasn't returned to normal speed (60 fps)
+by the time you hit the title screen, one of three things is probably happening:
 - You're on a laptop and your power settings are throttling the processor.
   - Try plugging in or switching to "Best Performance" (on Windows).
 - Debug printouts have been enabled on the BizHawk side and are causing lag.
@@ -147,7 +171,7 @@ Would be open to porting to other emulators as well.
 
 See `TODO.txt` for potential future work.
   
-## Acknowlegements
+## Acknowledgements
 
 The following dependencies are bundled with the project:
 - [SoLoud](https://sol.gfxile.net/soloud/index.html) by Jari Komppa (for playing audio)
@@ -156,7 +180,6 @@ The following dependencies are specified in requirements.txt:
 - [Pandas](https://pandas.pydata.org/) (for reading the config file)
 - [PyGame](https://www.pygame.org/) (for creating audio clips - can also be used to play audio if SoLoud isn't working, though some features are unavailable)
 - [PyDub](https://github.com/jiaaro/pydub) (for creating silent audio clips)
-
 
 Thanks to the following projects as well for helping to make this possible:
 - [BGB](https://bgb.bircd.org/), for the amazing emulator and debugger
