@@ -40,34 +40,45 @@ specifically this one from his SoundCloud
 
 ### Installing Prerequsites
 1. Install Python and BizHawk according to their directions.
-   * Bizhawk's Windows version has many dependencies,
-  but I had no issues running it without installing them.  YMMV.
+   * Bizhawk's Windows version has a prerequisite installer,
+  but I had no issues running BizHawk without it.  YMMV.
 2. Clone this repo.
-3. (Optional) set up a virtual environment.
-4. Install the required python packages using `pip install`.
-5. Create the directory `res/tracks` and copy all 70 tracks of the orchestration to that directory
-   * Make sure you're using the files from the Second Narrator's SoundCloud and that they have their original names.
-6. Set up BizHawk:
-    1. Run `EmuHawk` from the BizHawk directory.
-    2. In the main window, select **Config >> Cores >> GB >> GBHawk**.
-        - If you're prompted to set up a boot rom, 
-       scroll down to **Game Boy Color** and set **Game Boy Color Boot ROM**
-      to the location of your Game Boy Color Boot ROM File.
-       - This dialog is also accessible from **Config >> Firmwares...**
+3. From the root of the repo, create the directory `res/tracks`
+   and copy all 70 tracks of the orchestration to that directory
+   * Make sure you're using the files from the Second Narrator's SoundCloud
+     and that they have their original names.
+4. Set up BizHawk:
+    1. Run `EmuHawk.exe` from the BizHawk directory.
+    2. In the main Bizhawk window, select **Config >> Firmwares...**
+       1. scroll down to **Game Boy Color**, right click
+          **Game Boy Color Boot ROM >> Set Customization...**,
+          and select the location of your Game Boy Color Boot ROM File.
+    3. In the main Bizhawk window, select **Config >> Cores >> GB >> GBHawk**.
     3. Close EmuHawk
+5. Edit the file `run_emulator.bat` with your favorite text editor
+   and replace `path\to\Emuhawk.exe` with the path
+   to wherever you downloaded `Emuhawk.exe`
   
 ### Running the Project
-1. Run the `src/main_server.py` script.
-   * On first run, the program will generate a number of `.wav` files in the `res/clips` directory.
-   * This only happens once unless they're deleted or moved.
+1. Run the `run_server.bat` script.
+   * This will:
+     * create a virtual environment called `venv` if it doesn't already exist
+     * install the necessary packages from `requirements.txt`
+     * launch the music server
+   * On first run, the music server will generate a number of `.wav` files in the `res/clips` directory.
+     * This only happens once unless they're deleted or moved.
    * When the `main_server` is ready, it'll print "Socket now listening".
-2. Run `EmuHawk --socket_ip=127.0.0.1 --socket_port=19938 --lua=[bindings]` from wherever you downloaded BizHawk,
-   where `[bindings]` is the path to the `src/bizhawk_bindings.lua` file
-3. in the `Lua Console` window, click the green checkmark in the toolbar
-   * If it worked, you'll see "1 script (1 active, 0 paused)",
-     and the output window will show "Loaded Bindings" and the current time.
-4. Open your Link's Awakening DX ROM from the main window under **File >> Open ROM**.
+2. Run the `run_emulator.bat` script you edited earlier.
+    - in the `Lua Console` window, you should see "1 script (1 active, 0 paused)"
+      and the first line of the output window will show "Loaded Bindings" and the current time.
+    - You can ignore the warnings from NullHawk, if there are any.
+    - If the script isn't active, activate it with the "Toggle Script" button
+      (the green checkmark in the toolbar of the `Lua Console` window).
+4. Open your Link's Awakening DX ROM from the main BizHawk window under **File >> Open ROM**.
 5. Play Link's Awakening in BizHawk with awesome music.
+
+The music will stop if you close BizHawk.
+You can restart BizHawk without restarting the music server, but not vice-versa.
 
 ### Upgrading the Project
 1. `git pull` any updates.
@@ -125,6 +136,7 @@ so I don't see why it wouldn't, but I haven't gotten around to it yet.
 You'll probably need to, at the very least:
 * Compile or otherwise obtain a Linux version of the SoLoud library
 * Edit `src/soloud/soloud.py` to load the Linux library
+* Create the venv and load EmuHawk with the network settings and Lua script yourself
 
 ### Why BizHawk instead of [insert emulator here]?
 BizHawk was the first emulator I found with support for both IPC
