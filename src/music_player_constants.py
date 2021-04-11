@@ -1,0 +1,5 @@
+PSEUDOSONG_DO_NOTHING = 0x00
+PSEUDOSONG_STOP_MUSIC = 0x70
+PSEUDOSONG_PREVIOUS_SONG = 0xFE
+# TODO: should this be a column in the musicReference file?
+SONGS_TO_IGNORE_AS_PREVIOUS = [0x34, 0x36, 0x4A, 0x8A, 0x30, 0x50, 0x35, 0x55, 0x56, 0x0F]

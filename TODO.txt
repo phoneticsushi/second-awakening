@@ -1,0 +1,31 @@
+TODO.txt:
+
+Major Bugs:
+ [None!]
+
+Minor Bugs:
+  Original game will wait until "Instrument Acquired" theme finishes before playing instrument song
+    Because we silence the music, that song is not playing
+    This allows you to advance the text box immediately and cut off the "Instrument Acquired" theme
+ Because of the way we handle silencing the audio, some fanfares are cut off
+    e.g. when unlocking Eagle's Tower
+ Some of the song transitions cause slight audio popping
+    Milliseconds aren't precise enough
+    Solution is to store clip timings in microsecond/sample terms and cut the songs at zero-crossings
+    May or may not do this
+
+Potential Future Features:
+ Delay Pre-Game Start to get intro to first track in
+ Handle Ocarina songs
+    These are coded as Jingles and thus require handling separately from the background music
+ "Music Showcase" mode in the style of the Let's Play
+    Remember the position of the last three songs played
+    Resume playing at that position if any song in that list is played
+
+Potential Tweaks:
+ Apply heart container fanfare to complete before playing "Instrument on Pedestal"?
+ L/R channel audio volumes could control channels directly
+    right now they're just averaged and that volume applied globally
+    in practice, this isn't an issue, and probably actually sounds better
+ Occasional Clicking sounds coming from emulator when music changes
+   Might try silencing music immediately on emulator instead of waiting for Python to respond
