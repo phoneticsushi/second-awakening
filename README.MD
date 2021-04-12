@@ -72,11 +72,11 @@ specifically this one from his SoundCloud
      * This only happens once unless they're deleted or moved.
    * When the `main_server` is ready, it'll print "Socket now listening".
 3. Run the `run_emulator.bat` script you edited earlier.
-    - in the `Lua Console` window, you should see "1 script (1 active, 0 paused)"
+    - in the `Lua Console` window, you should see "1 script (1 active, 0 paused)",
       and the first line of the output window will show "Loaded Bindings" and the current time.
-    - You can ignore the warnings from NullHawk, if there are any.
     - If the script isn't active, activate it with the "Toggle Script" button
       (the green checkmark in the toolbar of the `Lua Console` window).
+   - You can ignore the warnings from NullHawk, if there are any.
 4. Open your Link's Awakening DX ROM from the main BizHawk window under **File >> Open ROM**.
 5. Play Link's Awakening in BizHawk with awesome music.
 
@@ -188,3 +188,7 @@ Thanks to the following projects as well for helping to make this possible:
 - The developers of [PyBoy](https://github.com/Baekalfen/PyBoy) and [mGBA](https://mgba.io/),
   for patiently explaining to me why their emulators are not suited to this project,
   though they are both awesome and worth checking out
+  
+...and, of course...
+- [The Second Narrator](https://www.youtube.com/channel/UChcmd07Qpsl9AG58GeLnldQ), Jeremiah Sun,
+  for an amazing soundtrack to an amazing game.
