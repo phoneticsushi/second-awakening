@@ -1,2 +1,7 @@
+# Tooling-Gnenerated directories
+__pycache__/
+
+# Project-Generated directories
 /res/tracks/
 /res/clips/
+/venv/
