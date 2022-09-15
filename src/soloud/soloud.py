@@ -7,7 +7,7 @@ from pathlib import Path
 
 soloud_dll = None
 
-for filename in ['soloud_x86', 'soloud_x64', 'libsoloud_x86.so', 'libsoloud_x64.so']:
+for filename in ['soloud_x86', 'soloud_x64', 'libsoloud.so']:
 	try:
 		dir_path = Path(__file__).resolve().parents[0]
 		dll_path = dir_path.joinpath(filename)
