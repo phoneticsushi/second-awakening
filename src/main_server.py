@@ -83,11 +83,14 @@ def auto_music_thread(conn, ip, port):
             except ConnectionResetError:
                 break
 
-            # TODO: check payload size?
             print(f'RECV: {client_payload}')
+            if 0 == len(client_payload):
+                # Connection is closed
+                break
+            assert(2 == len(client_payload))
             handle_client_event(chr(client_payload[0]), client_payload[1], conn)
 
-    print(f'Connection {ip}:{port} closed')
+    print(f'Connection from {ip}:{port} is closed')
     player.stop_music()
 
 
