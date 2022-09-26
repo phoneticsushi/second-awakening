@@ -5,16 +5,14 @@
 In 2014-2015, Jeremiah Sun (a.k.a The Second Narrator) created [a full orchestration
 of the soundtrack for Link's Awakening DX (1998)](https://www.youtube.com/playlist?list=PLQ58HYTDzLvL92US1q6csKkVmQN-4SeT-)
 for the Game Boy Color.
-It's a beautiful orchestration, and that's putting it mildly.
+
+(Note: I have no affiliation with The Second Narrator.  Go listen to his music though; it's really good.)
+
 He also produced (warning: spoilers!) [a Let's Play of the entire game](https://www.youtube.com/watch?v=mdiXsPTZ3QM)
 to showcase his music, with each of his tracks edited into the video at the appropriate points in the game.
 
-Wow, that's awesome.  Unfortunately, post-production is hard, and it tends to take a lot of time,
-which makes it difficult to enjoy playing the game yourself.
+Now you can too, no video-editing skills required.
 
-Well, now you can do it live, no video-editing skills required.
-
-Note: I have no affiliation with The Second Narrator.  I just really, really like this score.
 
 ## No really, what is it?
 
@@ -33,8 +31,6 @@ You'll need to obtain the following to run the project:
 - Computer running Windows (though it might work on Linux without much trouble; see FAQ)
 - [Python](https://www.python.org/)
 - [BizHawk Emulator](http://tasvideos.org/BizHawk.html)
-- [The Second Narrator's LADX orchestrated soundtrack](https://soundcloud.com/jeremiah-sun/sets/link-awakening-orchestral-arrangement),
-specifically this one from his SoundCloud
 - A ROM dump of LADX for the Game Boy Color (you'll need to find this yourself)
 - A dump of the Game Boy Color Boot ROM (ditto)
 
@@ -42,12 +38,7 @@ specifically this one from his SoundCloud
 1. Install Python and BizHawk according to their directions.
    * Bizhawk's Windows version has a prerequisite installer,
   but I had no issues running BizHawk without it.  YMMV.
-2. Clone this repo.
-3. From the root of the repo, create the directory `res/tracks`
-   and copy all 70 tracks of the orchestration to that directory
-   * Make sure you're using the files from the Second Narrator's SoundCloud
-     and that they have their original names.
-4. Set up BizHawk:
+3. Set up BizHawk:
     1. Run `EmuHawk.exe` from the BizHawk directory.
     2. In the main Bizhawk window, select **Config >> Firmwares...**
        1. scroll down to **Game Boy Color**, right click
@@ -60,23 +51,23 @@ specifically this one from his SoundCloud
 1. (Optional) If on a laptop, set your power settings to "Maximum Performance"
    and/or plug in the computer
    to give yourself the best chance of emulating at full speed.
-2. Run the `run_server.bat` script.
+2. Clone this repo.
+3. Run the `run_server.bat` script.
    * This will:
      * ask you where you installed EmuHawk (first time only)
      * create a virtual environment called `venv` if it doesn't already exist
      * install the necessary packages from `requirements.txt`
-     * launch the music server
-   * On first run, the music server will generate a number of `.wav` files in the `res/clips` directory.
-     * This only happens once unless they're deleted or moved.
-   * When the `main_server` is ready, it'll print "Socket now listening".
-3. Run the `run_emulator.bat` script you edited earlier.
+     * download [the Second Narrator's LADX orchestrated soundtrack](https://soundcloud.com/jeremiah-sun/sets/link-awakening-orchestral-arrangement) from SoundCloud (will populate `res/tracks`, first time only)
+     * launch the music server (will populate `res/clips`, first time only)
+   * When the server is ready, it'll print "Socket now listening".
+4. Run the `run_emulator.bat` script you edited earlier.
     - in the `Lua Console` window, you should see "1 script (1 active, 0 paused)",
       and the first line of the output window will show "Loaded Bindings" and the current time.
     - If the script isn't active, activate it with the "Toggle Script" button
       (the green checkmark in the toolbar of the `Lua Console` window).
    - You can ignore the warnings from NullHawk, if there are any.
-4. Open your Link's Awakening DX ROM from the main BizHawk window under **File >> Open ROM**.
-5. Play Link's Awakening in BizHawk with awesome music.
+5. Open your Link's Awakening DX ROM from the main BizHawk window under **File >> Open ROM**.
+6. Play Link's Awakening in BizHawk with awesome music.
 
 The music will stop if you close BizHawk.
 You can restart BizHawk without restarting the music server, but not vice-versa.
