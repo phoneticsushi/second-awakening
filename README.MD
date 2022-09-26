@@ -54,10 +54,7 @@ specifically this one from his SoundCloud
           **Game Boy Color Boot ROM >> Set Customization...**,
           and select the location of your Game Boy Color Boot ROM File.
     3. In the main Bizhawk window, select **Config >> Cores >> GB >> GBHawk**.
-    3. Close EmuHawk
-5. Edit the file `run_emulator.bat` with your favorite text editor
-   and replace `path\to\Emuhawk.exe` with the path
-   to wherever you downloaded `Emuhawk.exe`
+    4. Close EmuHawk
 
 ### Running the Project
 1. (Optional) If on a laptop, set your power settings to "Maximum Performance"
@@ -65,6 +62,7 @@ specifically this one from his SoundCloud
    to give yourself the best chance of emulating at full speed.
 2. Run the `run_server.bat` script.
    * This will:
+     * ask you where you installed EmuHawk (first time only)
      * create a virtual environment called `venv` if it doesn't already exist
      * install the necessary packages from `requirements.txt`
      * launch the music server

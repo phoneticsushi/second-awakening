@@ -5,3 +5,6 @@ __pycache__/
 /res/tracks/
 /res/clips/
 /venv/
+
+# Project-Generated files
+/link_to_emuhawk
