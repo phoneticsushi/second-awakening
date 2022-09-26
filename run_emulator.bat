@@ -8,11 +8,18 @@ if not exist "res\musicReference.ods" (
 )
 
 set LUA_PATH=%CD%\src\bizhawk_bindings.lua
-set EMUHAWK_LINK_NAME="link_to_emuhawk"
+set EMUHAWK_PATH_FILE=path_to_emuhawk.txt
 
-if not exist "$EMUHAWK_LINK_NAME" (
-    set /p PATH_TO_EMUHAWK=Enter path to Emuhawk.exe:
-    mklink "$EMUHAWK_LINK_NAME" "$PATH_TO_EMUHAWK"
+if exist "$EMUHAWK_PATH_FILE" (
+    set /p PATH_TO_EMUHAWK=<"$EMUHAWK_PATH_FILE"
+)
+
+:find_emuhawk_loop
+if defined PATH_TO_EMUHAWK if not exist "$PATH_TO_EMUHAWK" (
+    echo "EmuHawk not found"
+    set /p PATH_TO_EMUHAWK=Enter absolute path to Emuhawk: 
+    echo "$PATH_TO_EMUHAWK" > "$EMUHAWK_PATH_FILE"
+    goto find_emuhawk_loop
 )
 
 echo Trying to run Emuhawk...
