@@ -1,5 +1,11 @@
 @echo off
 
+if not exist "res\musicReference.ods" (
+    echo "musicReference.ods not found;"
+    echo "Are you executing this script from the root of the repo?"
+    exit 1
+)
+
 if not exist venv (
     echo "Virtual environment not found; creating one in 'venv'..."
     python -m venv venv
