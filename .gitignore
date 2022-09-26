@@ -8,3 +8,6 @@ __pycache__/
 
 # Project-Generated files
 /path_to_emuhawk.txt
+
+# EmuHawk-Generated files
+/EmuHawkMono*.txt
