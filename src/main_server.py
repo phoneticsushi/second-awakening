@@ -10,7 +10,6 @@ from music_player_constants import *
 
 # Server code adapted from http://danielhnyk.cz/simple-server-client-aplication-python-3/
 
-GBC_STOP_MUSIC_PAYLOAD = bytes([PSEUDOSONG_STOP_MUSIC])
 LADX_MINIMUM_VOLUME = 0x0
 LADX_MAXIMUM_VOLUME = 0x7
 
@@ -21,24 +20,40 @@ class MusicSpeed(Enum):
     HALF_SPEED = 2
 
 
-def send_music_payload(payload, conn):
-    conn.send(payload)
-    print(f'SEND: {payload}')
+def send_music_payload_bizhawk(song_id: int, conn):
+    """
+    Sends a music payload in Bizhawk's 
+
+    BizHawk format for socket conections is:
+    '[payload_length] [payload]' - note the space!
+    Only ASCII text is accepted, i.e. each byte must be <= 0x7F
+    """
+    bizhawk_payload = bytes([0x31, 0x20, song_id])  # '1', 'space', song_id
+    conn.send(bizhawk_payload)
+    print(f'SEND: {bizhawk_payload}')
 
 
-def handle_music_change(song_id, conn):
-    if song_id != PSEUDOSONG_DO_NOTHING:
-        if song_id != PSEUDOSONG_STOP_MUSIC:
-            send_music_payload(GBC_STOP_MUSIC_PAYLOAD, conn)  # Silence GBC as fast as possible
-
+def handle_music_change(song_id: int, conn):
+    """
+    BizHawk blocks when trying to read the socket,
+    so the LUA script is set to poll only when submitting a music change.
+    
+    This function must reply to the client exactly once
+    for each time it's called
+    """
+    if song_id in [PSEUDOSONG_DO_NOTHING, PSEUDOSONG_STOP_MUSIC]:
+        send_music_payload_bizhawk(song_id, conn)
+    else:
         print(f'Handle Music Changed: song {hex(song_id)}')
         if song_id == 0x01:
             # Do not attempt to play Title after Shipwreck (0x01) as the player will handle it
-            pass
-        elif not player.play_music(song_id):
+            send_music_payload_bizhawk(PSEUDOSONG_STOP_MUSIC, conn)
+        elif player.play_music(song_id):
+            # We can handle this music, so silence the GBC
+            send_music_payload_bizhawk(PSEUDOSONG_STOP_MUSIC, conn)
+        else:
             # We can't handle this music, so play on GBC:
-            original_song_payload = bytes([song_id])
-            send_music_payload(original_song_payload, conn)
+            send_music_payload_bizhawk(song_id, conn)
             print(f'NO MUSIC for song {hex(song_id)}; playing on GBC...')
 
 
@@ -79,7 +94,11 @@ def auto_music_thread(conn, ip, port):
 
         if readable:
             try:
-                client_payload = conn.recv(2)
+                # The client will always send two bytes,
+                # resulting in a four-byte payload from BizHawk.
+                # The format is:
+                # '2', space, event, value
+                client_payload = conn.recv(4)
             except ConnectionResetError:
                 break
 
@@ -87,8 +106,8 @@ def auto_music_thread(conn, ip, port):
             if 0 == len(client_payload):
                 # Connection is closed
                 break
-            assert(2 == len(client_payload))
-            handle_client_event(chr(client_payload[0]), client_payload[1], conn)
+            # Read only the event and value
+            handle_client_event(chr(client_payload[2]), client_payload[3], conn)
 
     print(f'Connection from {ip}:{port} is closed')
     player.stop_music()

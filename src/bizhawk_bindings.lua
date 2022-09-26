@@ -12,7 +12,8 @@ end
 
 ---- Constants
 
-SILENCE_AUDIO_PSEUDOSONG = 0x70
+PSEUDOSONG_DO_NOTHING = 0x00
+PSEUDOSONG_STOP_MUSIC = 0x70
 
 ---- LADX Function Pointers
 
@@ -80,7 +81,14 @@ applied_song_id = nil
 current_rombank = nil
 
 should_silence_music = false
+-- makes sure that song is applied only once
+-- in the function that checks if we're on Bank 1B,
+-- since that function has to run on every frame
 should_ignore_song = false
+-- used to check for a new song from the server
+-- once and only once after sending a song change event to the server.
+-- this is required since reading the socket always blocks forever
+should_poll_for_song = false
 
 is_running_at_partial_speed = false  -- Used for Various Cutscenes
 
@@ -200,7 +208,7 @@ function check_if_music_changed_1b()
 
         found_song_id = emu.getregister('A')
         if found_song_id == 0xFF then
-            found_song_id = SILENCE_AUDIO_PSEUDOSONG
+            found_song_id = PSEUDOSONG_STOP_MUSIC
         end
         applied_song_id = found_song_id  -- Active until overridden
         logd('\nMUSIC CHANGE: ' .. hex(found_song_id))
@@ -211,6 +219,7 @@ function check_if_music_changed_1b()
         else
             comm.socketServerSend(payload)
             logd('SEND: Song ' .. hex(string.byte(payload, 2)))
+            should_poll_for_song = true
         end
 
         -- Hacks to set emulator speed so cutscenes match the music
@@ -248,9 +257,10 @@ function check_if_music_changed_1b()
 end
 
 function poll_for_new_song()
+    logd('\nDEBUG: Polling for new song...')
     local input = comm.socketServerResponse()
     if (not isempty(input)) then
-        logd('\nRECV: length ' .. string.len(input) .. ' {' .. input .. '}')
+        logd('RECV: length ' .. string.len(input) .. ' {' .. input .. '}')
         for i=1,string.len(input) do
             suggested_song_id = string.byte(input, i)  -- string is indexed from 1
             if suggested_song_id == nil then
@@ -265,7 +275,10 @@ function poll_for_new_song()
 end
 
 function apply_song()
-    if suggested_song_id == SILENCE_AUDIO_PSEUDOSONG then
+    if suggested_song_id == PSEUDOSONG_DO_NOTHING then
+        logd('DEBUG: RECEIVED PSEUDOSONG_DO_NOTHING')
+        return
+    elseif suggested_song_id == PSEUDOSONG_STOP_MUSIC then
         -- Need to be on the 1B bank to call the slience routine -
         -- this is the only reason to use the should_silence_music flag,
         -- otherwise we could do this immediately
@@ -284,14 +297,14 @@ function try_silencing_music()
     if should_silence_music and on_rom_bank(0x1B) then
         logd('DEBUG: APPLY SILENCE on GBC')
         gbc_call_function_gbhawk(STOP_MUSIC_DEBUG_ROUTINE_1B)
-        applied_song_id = SILENCE_AUDIO_PSEUDOSONG
+        applied_song_id = PSEUDOSONG_STOP_MUSIC
         should_silence_music = false
     end
 end
 
 function on_gbc_silence_music()
     if on_rom_bank(0x1F) then
-        local payload = 's' .. string.char(SILENCE_AUDIO_PSEUDOSONG)
+        local payload = 's' .. string.char(PSEUDOSONG_STOP_MUSIC)
         comm.socketServerSend(payload)
         logd('SEND: SILENCE AUDIO')
     end
@@ -370,7 +383,10 @@ event.onmemoryexecute(on_gbc_silence_music, func_01F_7B5C)
 ---- Main Loop
 
 while true do
-    poll_for_new_song()
+    if should_poll_for_song then
+        poll_for_new_song()
+        should_poll_for_song = false
+    end
     if debug_logging then
         local found = (found_song_id == nil) and "XX" or hex(found_song_id)
         local suggested = (suggested_song_id == nil) and "XX" or hex(suggested_song_id)

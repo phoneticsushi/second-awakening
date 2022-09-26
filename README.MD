@@ -30,18 +30,17 @@ You get:
 
 # Seems pretty cool I guess; how do I use it?
 
-Development and testing took place on BizHawk 2.6.1 for Windows using the LADX English 1.1 Release,
-though other versions will likely work as well.
-
-## Gathering Dependencies
-
-You'll need a computer running Windows, with the following installed:
+You'll need a computer running Windows or Linux with the following installed:
 - [Python](https://www.python.org/) (with `virtualenv`)
 - [BizHawk Emulator](http://tasvideos.org/BizHawk.html)
 - A ROM dump of LADX for the Game Boy Color (you'll need to find this yourself)
 - A dump of the Game Boy Color Boot ROM (ditto)
 
-**Linux support is in the works** - see FAQ for details
+# Setting up the Project
+
+Development and testing took place on a prerelease build of BizHawk 2.9 for Linux using the LADX English 1.1 Release, though other versions will likely work as well.
+
+This project will not work on BizHawk <= 2.6.1 due to a change in the socket handling code after that version.
 
 ## Installing Prerequsites (one time only)
 1. Install Python, `virtualenv`, and BizHawk according to their directions.
@@ -155,25 +154,6 @@ BizHawk was the first emulator I found with support for both IPC
 and programatic breakpoints, both of which are necessary for this project to work.
 Would be open to porting to other emulators as well.
 
-# Linux Support
-
-LUA support in Linux is an ongoing project in BizHawk.
-At this project's inception, there was no support, but it's fast approaching.
-
-As of writing, the most recent BizHawk dev build has LUA support (what will become 2.9).
-The stable version (2.8) does not.
-
-What works:
-- `run_server` and `run_emulator` scripts have versions for `bash`
-- Music server works on Linux using SoLoud library for Linux
-
-What doesn't work yet:
-- BizHawk LUA mostly works, except for an issue with the client-server communication:
-   - BizHawk blocks endlessly in LUA waiting for data on the network socket
-   - There is no way to specify a timeout or continue until the client sends more data
-
-Not sure if this is a behavior change since version 2.6.1 or if it's a Linux bug, but the code will need changing to support this behavior.
-
 # What's Next?
 
 See `TODO.txt` for potential future work.
@@ -190,6 +170,7 @@ The following dependencies are specified in requirements.txt:
 - [Pandas](https://pandas.pydata.org/) (for reading the config file)
 - [PyGame](https://www.pygame.org/) (for creating audio clips - can also be used to play audio if SoLoud isn't working, though some features are unavailable)
 - [PyDub](https://github.com/jiaaro/pydub) (for creating silent audio clips)
+- [youtube-dl](https://github.com/ytdl-org/youtube-dl) (for auto-downloading the tracks)
 
 Thanks to the following projects as well for helping to make this possible:
 - [BGB](https://bgb.bircd.org/), for the amazing emulator and debugger
