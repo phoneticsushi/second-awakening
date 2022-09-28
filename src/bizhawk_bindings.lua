@@ -3,6 +3,7 @@ console.log('Loaded Bindings: ' .. os.date("%X"))
 ---- Development
 debug_logging = false
 dump_logging = false
+display_metrics_on_screen = false
 
 function logd(str)
     if debug_logging then
@@ -98,11 +99,44 @@ function isempty(s)
   return s == nil or s == ''
 end
 
-function sleep (seconds)
+function sleep(seconds)
     local now = os.clock()
     local expiration_time = tonumber(now + seconds);
     -- TODO replace with non-busy wait
     while (os.clock() < expiration_time) do
+    end
+end
+
+---- Debug Output
+
+-- Where to print text to screen
+-- Start below the FPS counter
+text_display_vertical_pixels = nil
+
+function reset_text_display()
+    text_display_vertical_pixels = 30
+end
+
+function advance_text_display_line()
+    -- Each line is 15 pixels high
+    text_display_vertical_pixels = (text_display_vertical_pixels or 0) + 15
+    return text_display_vertical_pixels
+end
+
+---- Profiling
+
+profiling_counts = {}
+
+function profiling_inc_count(profile_name)
+    local value_to_increment = profiling_counts[profile_name] or 0
+    profiling_counts[profile_name] = value_to_increment + 1
+end
+
+function profiling_display_counts()
+    advance_text_display_line()
+    gui.text(0, advance_text_display_line(), 'Profiling:')
+    for key, value in pairs(profiling_counts) do
+        gui.text(0, advance_text_display_line(), key .. ': ' .. value)
     end
 end
 
@@ -115,6 +149,8 @@ end
 -- As such, it can't always be trusted to indicate the current rom bank.
 -- To get around this, we track the true rom bank ourselves every time it changes
 function update_rom_bank()
+    profiling_inc_count('update_rom_bank')
+
     -- Same hack as on_music_track_timing_changed
     current_rombank = emu.getregister('A')
 end
@@ -195,6 +231,8 @@ end
 ---- Music Handling
 
 function check_if_music_changed_1b()
+    profiling_inc_count('check_if_music_changed_1b')
+
     if on_rom_bank(0x1B) then
         if should_ignore_song then
             logd('DEBUG: Ignoring song change')
@@ -256,6 +294,8 @@ function check_if_music_changed_1b()
 end
 
 function poll_for_new_song()
+    profiling_inc_count('poll_for_new_song')
+
     logd('\nDEBUG: Polling for new song...')
     local input = comm.socketServerResponse()
     if (not isempty(input)) then
@@ -274,6 +314,8 @@ function poll_for_new_song()
 end
 
 function apply_song()
+    profiling_inc_count('apply_song')
+
     if suggested_song_id == PSEUDOSONG_DO_NOTHING then
         logd('DEBUG: RECEIVED PSEUDOSONG_DO_NOTHING')
         return
@@ -293,6 +335,8 @@ function apply_song()
 end
 
 function try_silencing_music()
+    profiling_inc_count('try_silencing_music')
+
     if should_silence_music and on_rom_bank(0x1B) then
         logd('DEBUG: APPLY SILENCE on GBC')
         gbc_call_function_gbhawk(STOP_MUSIC_DEBUG_ROUTINE_1B)
@@ -302,6 +346,8 @@ function try_silencing_music()
 end
 
 function on_gbc_silence_music()
+    profiling_inc_count('on_gbc_silence_music')
+
     if on_rom_bank(0x1F) then
         local payload = 's' .. string.char(PSEUDOSONG_STOP_MUSIC)
         comm.socketServerSend(payload)
@@ -310,6 +356,8 @@ function on_gbc_silence_music()
 end
 
 function on_volume_left_channel_changed()
+    profiling_inc_count('on_volume_left_channel_changed')
+
     -- Same hack as on_music_track_timing_changed
     local raw_volume = emu.getregister('A')
     local shift_volume = bit.rshift(raw_volume, 4)  -- left channel uses high nybble only
@@ -320,6 +368,8 @@ function on_volume_left_channel_changed()
 end
 
 function on_volume_right_channel_changed()
+    profiling_inc_count('on_volume_right_channel_changed')
+
     -- Same hack as on_music_track_timing_changed
     local raw_volume = emu.getregister('A')
     local volume = bit.band(raw_volume, 0xF)  -- left channel uses low nybble only
@@ -331,6 +381,8 @@ end
 ---- Intro Cutscene
 
 function delay_during_intro_fade_to_white()
+    profiling_inc_count('delay_during_intro_fade_to_white')
+
     if on_rom_bank(0x01) then
         local intro_timer = memory.readbyte(wIntroTimer)
         if intro_timer == 0xA1 then  -- During whiteout, after music ends
@@ -342,6 +394,8 @@ function delay_during_intro_fade_to_white()
 end
 
 function on_music_track_timing_changed()
+    profiling_inc_count('on_music_track_timing_changed')
+
     -- Hack: For some reason, reading wMusicTrackTiming when this callback executes
     -- always gets the previous value from BizHawk rather then the new one
     -- that was (presumably) just written.  Fortunately, judging from the LADX code,
@@ -382,15 +436,17 @@ event.onmemoryexecute(on_gbc_silence_music, func_01F_7B5C)
 ---- Main Loop
 
 while true do
-    if debug_logging then
+    if display_metrics_on_screen then
+        reset_text_display()
         local found = (found_song_id == nil) and "XX" or hex(found_song_id)
         local suggested = (suggested_song_id == nil) and "XX" or hex(suggested_song_id)
         local applied = (applied_song_id == nil) and "XX" or hex(applied_song_id)
         local rombank = (current_rombank == nil) and "XX" or hex(current_rombank)
-        gui.text(0, 45, 'Song Found: ' .. found)
-        gui.text(0, 60, 'Song Suggested: ' .. suggested)
-        gui.text(0, 75, 'Song Applied: ' .. applied)
-        gui.text(0, 90, 'Rom Bank: ' .. rombank)
+        gui.text(0, advance_text_display_line(), 'Song Found: ' .. found)
+        gui.text(0, advance_text_display_line(), 'Song Suggested: ' .. suggested)
+        gui.text(0, advance_text_display_line(), 'Song Applied: ' .. applied)
+        gui.text(0, advance_text_display_line(), 'Rom Bank: ' .. rombank)
+        profiling_display_counts()
     end
     emu.frameadvance()
 end
