@@ -85,10 +85,6 @@ should_silence_music = false
 -- in the function that checks if we're on Bank 1B,
 -- since that function has to run on every frame
 should_ignore_song = false
--- used to check for a new song from the server
--- once and only once after sending a song change event to the server.
--- this is required since reading the socket always blocks forever
-should_poll_for_song = false
 
 is_running_at_partial_speed = false  -- Used for Various Cutscenes
 
@@ -219,7 +215,10 @@ function check_if_music_changed_1b()
         else
             comm.socketServerSend(payload)
             logd('SEND: Song ' .. hex(string.byte(payload, 2)))
-            should_poll_for_song = true
+            -- check for a new song from the server
+            -- exactly once per song change sent to the server
+            -- this is required since reading the socket always blocks forever
+            poll_for_new_song()
         end
 
         -- Hacks to set emulator speed so cutscenes match the music
@@ -383,10 +382,6 @@ event.onmemoryexecute(on_gbc_silence_music, func_01F_7B5C)
 ---- Main Loop
 
 while true do
-    if should_poll_for_song then
-        poll_for_new_song()
-        should_poll_for_song = false
-    end
     if debug_logging then
         local found = (found_song_id == nil) and "XX" or hex(found_song_id)
         local suggested = (suggested_song_id == nil) and "XX" or hex(suggested_song_id)
