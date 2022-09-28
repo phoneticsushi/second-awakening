@@ -33,14 +33,12 @@ You get:
 You'll need a computer running Windows or Linux with the following installed:
 - [Python](https://www.python.org/) (with `virtualenv`)
 - [BizHawk Emulator](http://tasvideos.org/BizHawk.html)
+  - \>= 2.6.2 for Windows
+  - \>= 2.9 for Linux
 - A ROM dump of LADX for the Game Boy Color (you'll need to find this yourself)
 - A dump of the Game Boy Color Boot ROM (ditto)
 
 # Setting up the Project
-
-Development and testing took place on a prerelease build of BizHawk 2.9 for Linux using the LADX English 1.1 Release, though other versions will likely work as well.
-
-This project will not work on BizHawk <= 2.6.1 due to a change in the socket handling code after that version.
 
 ## Installing Prerequsites (one time only)
 1. Install Python, `virtualenv`, and BizHawk according to their directions.
@@ -64,11 +62,6 @@ This project will not work on BizHawk <= 2.6.1 due to a change in the socket han
    * If asked you where you installed EmuHawk (first time only):
       * For Windows, paste the path to `EmuHawk.exe`
       * For Linux, paste the path to `EmuHawkMono.sh`
-   * Note - on first run, this will:
-     1. create a virtual environment called `venv` if it doesn't already exist
-     2. install the necessary packages from `requirements.txt`
-     3. download [the Second Narrator's LADX orchestrated soundtrack](https://soundcloud.com/jeremiah-sun/sets/link-awakening-orchestral-arrangement) from SoundCloud to `res/tracks`
-     4. populate `res/clips` with audio files
    * When the server is ready, it'll print "Socket now listening".
 4. Run the `run_emulator.bat` script.
     - in the `Lua Console` window, you should see "1 script (1 active, 0 paused)",
